@@ -39,7 +39,8 @@ class GoslingAgent(BaseAgent):
         field_info = self.get_field_info()
         for i in range(field_info.num_boosts):
             boost = field_info.boost_pads[i]
-            self.boosts.append(boost_object(i, boost.location, boost.is_full_boost))
+            self.boosts.append(boost_object(
+                i, boost.location, boost.is_full_boost))
         self.refresh_player_lists(packet)
         self.ball.update(packet)
         self.ready = True
@@ -49,7 +50,8 @@ class GoslingAgent(BaseAgent):
         # Useful to keep separate from get_ready because humans can join/leave a match
         self.friends = [car_object(i, packet) for i in range(packet.num_cars) if
                         packet.game_cars[i].team == self.team and i != self.index]
-        self.foes = [car_object(i, packet) for i in range(packet.num_cars) if packet.game_cars[i].team != self.team]
+        self.foes = [car_object(i, packet) for i in range(
+            packet.num_cars) if packet.game_cars[i].team != self.team]
 
     def push(self, routine):
         # Shorthand for adding a routine to the stack
@@ -61,14 +63,16 @@ class GoslingAgent(BaseAgent):
 
     def line(self, start, end, color=None):
         color = color if color != None else [255, 255, 255]
-        self.renderer.draw_line_3d(start.copy(), end.copy(), self.renderer.create_color(255, *color))
+        self.renderer.draw_line_3d(
+            start.copy(), end.copy(), self.renderer.create_color(255, *color))
 
     def debug_stack(self):
         # Draws the stack on the screen
         white = self.renderer.white()
         for i in range(len(self.stack) - 1, -1, -1):
             text = self.stack[i].__class__.__name__
-            self.renderer.draw_string_2d(10, 50 + (50 * (len(self.stack) - i)), 3, 3, text, white)
+            self.renderer.draw_string_2d(
+                10, 50 + (50 * (len(self.stack) - i)), 3, 3, text, white)
 
     def clear(self):
         # Shorthand for clearing the stack of all routines
@@ -76,10 +80,14 @@ class GoslingAgent(BaseAgent):
 
     def preprocess(self, packet):
         # Calling the update functions for all of the objects
-        if packet.num_cars != len(self.friends) + len(self.foes) + 1: self.refresh_player_lists(packet)
-        for car in self.friends: car.update(packet)
-        for car in self.foes: car.update(packet)
-        for pad in self.boosts: pad.update(packet)
+        if packet.num_cars != len(self.friends) + len(self.foes) + 1:
+            self.refresh_player_lists(packet)
+        for car in self.friends:
+            car.update(packet)
+        for car in self.foes:
+            car.update(packet)
+        for pad in self.boosts:
+            pad.update(packet)
         self.ball.update(packet)
         self.me.update(packet)
         self.game.update(packet)
@@ -137,9 +145,12 @@ class car_object:
 
     def update(self, packet):
         car = packet.game_cars[self.index]
-        self.location.data = [car.physics.location.x, car.physics.location.y, car.physics.location.z]
-        self.velocity.data = [car.physics.velocity.x, car.physics.velocity.y, car.physics.velocity.z]
-        self.orientation = Matrix3(car.physics.rotation.pitch, car.physics.rotation.yaw, car.physics.rotation.roll)
+        self.location.data = [car.physics.location.x,
+                              car.physics.location.y, car.physics.location.z]
+        self.velocity.data = [car.physics.velocity.x,
+                              car.physics.velocity.y, car.physics.velocity.z]
+        self.orientation = Matrix3(
+            car.physics.rotation.pitch, car.physics.rotation.yaw, car.physics.rotation.roll)
         self.angular_velocity = self.orientation.dot(
             [car.physics.angular_velocity.x, car.physics.angular_velocity.y, car.physics.angular_velocity.z]).data
         self.demolished = car.is_demolished
@@ -174,8 +185,10 @@ class ball_object:
 
     def update(self, packet):
         ball = packet.game_ball
-        self.location.data = [ball.physics.location.x, ball.physics.location.y, ball.physics.location.z]
-        self.velocity.data = [ball.physics.velocity.x, ball.physics.velocity.y, ball.physics.velocity.z]
+        self.location.data = [ball.physics.location.x,
+                              ball.physics.location.y, ball.physics.location.z]
+        self.velocity.data = [ball.physics.velocity.x,
+                              ball.physics.velocity.y, ball.physics.velocity.z]
         self.latest_touched_time = ball.latest_touch.time_seconds
         self.latest_touched_team = ball.latest_touch.team
 
@@ -372,9 +385,6 @@ class Vector3:
             if return_magnitude:
                 return Vector3(self[0] / magnitude, self[1] / magnitude, self[2] / magnitude), magnitude
             return Vector3(self[0] / magnitude, self[1] / magnitude, self[2] / magnitude)
-        if return_magnitude:
-            return Vector3(0, 0, 0), 0
-        return Vector3(0, 0, 0)
 
     # Linear algebra functions
     def dot(self, value):
