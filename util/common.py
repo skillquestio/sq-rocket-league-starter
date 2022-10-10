@@ -77,7 +77,7 @@ def find_slope(shot_vector, car_to_target):
     return cap(d / e if e != 0 else 10*sign(d), -3.0, 3.0)
 
 
-def post_correction(ball_location, left_target, right_target):
+def post_correction(ball_location, left_target: Vector3, right_target: Vector3):
     # this function returns target locations that are corrected to account for the ball's radius
     # it also checks to make sure the ball can fit between the corrected locations
     # We purposely make this a bit larger so that our shots have a higher chance of success
@@ -92,8 +92,8 @@ def post_correction(ball_location, left_target, right_target):
     right_corrected = right_target if (
         right_adjusted-right_target).dot(goal_line_perp) > 0.0 else right_adjusted
 
-    new_goal_line, new_goal_width = (
-        right_corrected - left_corrected).normalize(True)
+    new_goal_line = (right_corrected - left_corrected).normalize()
+    new_goal_width = new_goal_line.magnitude()
     new_goal_perp = (new_goal_line.cross((0, 0, 1)))
     goal_center = left_corrected + (new_goal_line * new_goal_width * 0.5)
     ball_to_goal = (goal_center - ball_location).normalize()

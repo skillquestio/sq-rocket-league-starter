@@ -377,14 +377,11 @@ class Vector3:
         # Magnitude() returns the length of the vector
         return math.sqrt((self[0] * self[0]) + (self[1] * self[1]) + (self[2] * self[2]))
 
-    def normalize(self, return_magnitude=False):
+    def normalize(self):
         # Normalize() returns a Vector3 that shares the same direction but has a length of 1.0
         # Normalize(True) can also be used if you'd like the length of this Vector3 (used for optimization)
         magnitude = self.magnitude()
-        if magnitude != 0:
-            if return_magnitude:
-                return Vector3(self[0] / magnitude, self[1] / magnitude, self[2] / magnitude), magnitude
-            return Vector3(self[0] / magnitude, self[1] / magnitude, self[2] / magnitude)
+        return Vector3(self[0] / magnitude, self[1] / magnitude, self[2] / magnitude)
 
     # Linear algebra functions
     def dot(self, value):

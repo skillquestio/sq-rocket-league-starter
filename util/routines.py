@@ -431,8 +431,8 @@ class short_shot():
         self.target = target
 
     def run(self, agent):
-        car_to_ball, distance = (
-            agent.ball.location - agent.me.location).normalize(True)
+        car_to_ball = (agent.ball.location - agent.me.location).normalize()
+        distance = car_to_ball.magnitude()
         ball_to_target = (self.target - agent.ball.location).normalize()
 
         relative_velocity = car_to_ball.dot(
