@@ -5,6 +5,7 @@ from util.routines import *
 
 
 class Bot(GoslingAgent):
+    # This function runs every in-game tick (every time the game updates anything)
     def run(self):
-        # determines what to do
-        self.push(drive(1))
+        # the line below tells the bot what it's trying to do
+        self.set_intent(drive(500))

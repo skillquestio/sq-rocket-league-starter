@@ -25,6 +25,8 @@ class GoslingAgent(BaseAgent):
         self.foe_goal = goal_object(not self.team)
         # A list that acts as the routines stack
         self.stack = []
+        # A routine
+        self.intent = None
         # Game time
         self.time = 0.0
         # Whether or not GoslingAgent has run its get_ready() function
@@ -53,13 +55,13 @@ class GoslingAgent(BaseAgent):
         self.foes = [car_object(i, packet) for i in range(
             packet.num_cars) if packet.game_cars[i].team != self.team]
 
+    def set_intent(self, routine):
+        self.intent = routine
+
     def push(self, routine):
         # Shorthand for adding a routine to the stack
-        self.stack.append(routine)
-
-    def pop(self):
-        # Shorthand for removing a routine from the stack, returns the routine
-        return self.stack.pop()
+        # self.stack.append(routine)
+        self.set_intent(routine)
 
     def line(self, start, end, color=None):
         color = color if color != None else [255, 255, 255]
@@ -74,9 +76,9 @@ class GoslingAgent(BaseAgent):
             self.renderer.draw_string_2d(
                 10, 50 + (50 * (len(self.stack) - i)), 3, 3, text, white)
 
-    def clear(self):
-        # Shorthand for clearing the stack of all routines
-        self.stack = []
+    def clear_intent(self):
+        # Shorthand for clearing intent
+        self.intent = None
 
     def preprocess(self, packet):
         # Calling the update functions for all of the objects
@@ -94,7 +96,7 @@ class GoslingAgent(BaseAgent):
         self.time = packet.game_info.seconds_elapsed
         # When a new kickoff begins we empty the stack
         if self.kickoff_flag == False and packet.game_info.is_round_active and packet.game_info.is_kickoff_pause:
-            self.stack = []
+            self.clear_intent()
         # Tells us when to go for kickoff
         self.kickoff_flag = packet.game_info.is_round_active and packet.game_info.is_kickoff_pause
 
@@ -110,8 +112,8 @@ class GoslingAgent(BaseAgent):
         # Run our strategy code
         self.run()
         # run the routine on the end of the stack
-        if len(self.stack) > 0:
-            self.stack[-1].run(self)
+        if self.intent is not None:
+            self.intent.run(self)
         self.renderer.end_rendering()
         # send our updated controller back to rlbot
         return self.controller

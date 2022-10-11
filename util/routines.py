@@ -4,11 +4,15 @@ from util.common import *
 
 
 class drive():
-    def __init__(self, speed) -> None:
+    def __init__(self, speed, target=None) -> None:
         self.speed = speed
+        self.target = target
 
     def run(self, agent):
-        defaultThrottle(agent, self.speed * 2300)
+        defaultThrottle(agent, self.speed)
+        if self.target is not None:
+            relative_target = self.target - agent.me.location
+            defaultPD(agent, agent.me.local(relative_target))
 
 
 class atba():
@@ -130,10 +134,9 @@ class aerial_shot():
                 self.counter += 1
 
         if raw_time_remaining < -0.25:
-            agent.pop()
-            agent.push(recovery())
+            agent.set_intent(recovery())
         if not shot_valid(agent, self, 90):
-            agent.pop()
+            agent.clear_intent()
 
 
 class flip():
@@ -165,8 +168,7 @@ class flip():
             agent.controller.pitch = self.pitch
             agent.controller.yaw = self.yaw
         else:
-            agent.pop()
-            agent.push(recovery())
+            agent.set_intent(recovery())
 
 
 class goto():
@@ -212,13 +214,13 @@ class goto():
 
         velocity = 1+agent.me.velocity.magnitude()
         if distance_remaining < 350:
-            agent.pop()
+            agent.clear_intent()
         elif abs(angles[1]) < 0.05 and velocity > 600 and velocity < 2150 and distance_remaining / velocity > 2.0:
-            agent.push(flip(local_target))
+            agent.set_intent(flip(local_target))
         elif abs(angles[1]) > 2.8 and velocity < 200:
-            agent.push(flip(local_target, True))
+            agent.set_intent(flip(local_target, True))
         elif agent.me.airborne:
-            agent.push(recovery(self.target))
+            agent.set_intent(recovery(self.target))
 
 
 class goto_boost():
@@ -265,11 +267,11 @@ class goto_boost():
 
         velocity = 1+agent.me.velocity.magnitude()
         if self.boost.active == False or agent.me.boost >= 99.0 or distance_remaining < 350:
-            agent.pop()
+            agent.clear_intent()
         elif agent.me.airborne:
-            agent.push(recovery(self.target))
+            agent.set_intent(recovery(self.target))
         elif abs(angles[1]) < 0.05 and velocity > 600 and velocity < 2150 and (distance_remaining / velocity > 2.0 or (adjustment < 90 and car_to_target/velocity > 2.0)):
-            agent.push(flip(local_target))
+            agent.set_intent(flip(local_target))
 
 
 class jump_shot():
@@ -359,17 +361,16 @@ class jump_shot():
 
         if not self.jumping:
             if raw_time_remaining <= 0.0 or (speed_required - 2300) * time_remaining > 60 or not shot_valid(agent, self):
-                # If we're out of time or not fast enough to be within 45 units of target at the intercept time, we pop
-                agent.pop()
+                # If we're out of time or not fast enough to be within 45 units of target at the intercept time, we reset
+                agent.clear_intent()
                 if agent.me.airborne:
-                    agent.push(recovery())
+                    agent.set_intent(recovery())
             elif local_acceleration_required[2] > self.jump_threshold and local_acceleration_required[2] > local_acceleration_required.flatten().magnitude():
                 # Switch into the jump when the upward acceleration required reaches our threshold, and our lateral acceleration is negligible
                 self.jumping = True
         else:
             if (raw_time_remaining > 0.2 and not shot_valid(agent, self, 150)) or raw_time_remaining <= -0.9 or (not agent.me.airborne and self.counter > 0):
-                agent.pop()
-                agent.push(recovery())
+                agent.set_intent(recovery())
             elif self.counter == 0 and local_acceleration_required[2] > 0.0 and raw_time_remaining > 0.083:
                 # Initial jump to get airborne + we hold the jump button for extra power as required
                 agent.controller.jump = True
@@ -399,9 +400,8 @@ class kickoff():
         defaultPD(agent, local_target)
         defaultThrottle(agent, 2300)
         if local_target.magnitude() < 650:
-            agent.pop()
             # flip towards opponent goal
-            agent.push(
+            agent.set_intent(
                 flip(agent.me.local(agent.foe_goal.location - agent.me.location)))
 
 
@@ -421,7 +421,7 @@ class recovery():
         defaultPD(agent, local_target)
         agent.controller.throttle = 1
         if not agent.me.airborne:
-            agent.pop()
+            agent.clear_intent()
 
 
 class short_shot():
@@ -465,5 +465,4 @@ class short_shot():
             angles[1]) > 2.3 else agent.controller.handbrake
 
         if abs(angles[1]) < 0.05 and (eta < 0.45 or distance < 150):
-            agent.pop()
-            agent.push(flip(agent.me.local(car_to_ball)))
+            agent.set_intent(flip(agent.me.local(car_to_ball)))
