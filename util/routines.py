@@ -2,13 +2,6 @@ from util.common import *
 
 # This file holds all of the mechanical tasks, called "routines", that the bot can do
 
-class jumper():
-    def run(self, agent):
-        defaultThrottle(agent, 2300)
-        if agent.time % 5 == 0:
-            agent.controller.jump = True
-
-
 class drive():
     def __init__(self, speed, target=None) -> None:
         self.speed = speed
@@ -438,7 +431,7 @@ class short_shot():
 
     def run(self, agent):
         car_to_ball = (agent.ball.location - agent.me.location).normalize()
-        distance = car_to_ball.magnitude()
+        distance = (agent.ball.location - agent.me.location).magnitude()
         ball_to_target = (self.target - agent.ball.location).normalize()
 
         relative_velocity = car_to_ball.dot(

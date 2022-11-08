@@ -92,8 +92,9 @@ def post_correction(ball_location, left_target: Vector3, right_target: Vector3):
     right_corrected = right_target if (
         right_adjusted-right_target).dot(goal_line_perp) > 0.0 else right_adjusted
 
-    new_goal_line = (right_corrected - left_corrected).normalize()
-    new_goal_width = new_goal_line.magnitude()
+    difference = (right_corrected - left_corrected)
+    new_goal_line = difference.normalize()
+    new_goal_width = difference.magnitude()
     new_goal_perp = (new_goal_line.cross((0, 0, 1)))
     goal_center = left_corrected + (new_goal_line * new_goal_width * 0.5)
     ball_to_goal = (goal_center - ball_location).normalize()
