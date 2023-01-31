@@ -39,7 +39,7 @@ class GoslingAgent(BaseAgent):
         field_info = self.get_field_info()
         for i in range(field_info.num_boosts):
             boost = field_info.boost_pads[i]
-            self.boosts.append(boost_object(i, boost.location, boost.is_full_boost))
+            self.boosts.append(boost_object(i, boost.location))
         self.refresh_player_lists(packet)
         self.ball.update(packet)
         self.ready = True
@@ -195,11 +195,12 @@ class ball_object:
 
 
 class boost_object:
-    def __init__(self, index, location, large):
+    def __init__(self, index, location):
         self.index = index
         self.location = Vector3(location.x, location.y, location.z)
         self.active = True
-        self.large = large
+        # determine boost size by height (only works for standard maps)
+        self.large = self.location.z > 7
 
     def update(self, packet):
         self.active = packet.game_boosts[self.index].is_active
