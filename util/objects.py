@@ -6,7 +6,7 @@ from rlbot.agents.base_agent import BaseAgent, SimpleControllerState
 # This file holds all of the objects used in gosling utils
 # Includes custom vector and matrix objects
 
-class GoslingAgent(BaseAgent):
+class BotCommandAgent(BaseAgent):
     # This is the main object of Gosling Utils. It holds/updates information about the game and runs routines
     # All utils rely on information being structured and accessed the same way as configured in this class
     def initialize_agent(self):
@@ -27,7 +27,7 @@ class GoslingAgent(BaseAgent):
         self.intent = None
         # Game time
         self.time = 0.0
-        # Whether or not GoslingAgent has run its get_ready() function
+        # Whether or not BotCommandAgent has run its get_ready() function
         self.ready = False
         # the controller that is returned to the framework after every tick
         self.controller = SimpleControllerState()
@@ -124,7 +124,7 @@ class GoslingAgent(BaseAgent):
 
 class car_object:
     # The carObject, and kin, convert the gametickpacket in something a little friendlier to use,
-    # and are updated by GoslingAgent as the game runs
+    # and are updated by BotCommandAgent as the game runs
     def __init__(self, index, packet=None):
         self.location = Vector3(0, 0, 0)
         self.orientation = Matrix3(0, 0, 0)

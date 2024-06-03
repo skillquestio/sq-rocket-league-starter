@@ -1,8 +1,13 @@
 from util.common import *
+from util.objects import BotCommandAgent
 
 # This file holds all of the mechanical tasks, called "routines", that the bot can do
 
-class drive():
+class Routine():
+    def run(self, agent: BotCommandAgent) -> None:
+        pass
+
+class drive(Routine):
     def __init__(self, speed, target=None) -> None:
         self.speed = speed
         self.target = target
@@ -14,7 +19,7 @@ class drive():
             defaultPD(agent, agent.me.local(relative_target))
 
 
-class atba():
+class atba(Routine):
     # An example routine that just drives towards the ball at max speed
     def run(self, agent):
         relative_target = agent.ball.location - agent.me.location
@@ -23,7 +28,7 @@ class atba():
         defaultThrottle(agent, 2300)
 
 
-class aerial_shot():
+class aerial_shot(Routine):
     # Very similar to jump_shot(), but instead designed to hit targets above 300uu
     # ***This routine is a WIP*** It does not currently hit the ball very hard, nor does it like to be accurate above 600uu or so
     def __init__(self, ball_location, intercept_time, shot_vector, ratio):
@@ -138,7 +143,7 @@ class aerial_shot():
             agent.clear_intent()
 
 
-class flip():
+class flip(Routine):
     # Flip takes a vector in local coordinates and flips/dodges in that direction
     # cancel causes the flip to cancel halfway through, which can be used to half-flip
     def __init__(self, vector, cancel=False):
@@ -170,7 +175,7 @@ class flip():
             agent.set_intent(recovery())
 
 
-class goto():
+class goto(Routine):
     # Drives towards a designated (stationary) target
     # Optional vector controls where the car should be pointing upon reaching the target
     # TODO - slow down if target is inside our turn radius
@@ -222,7 +227,7 @@ class goto():
             agent.set_intent(recovery(self.target))
 
 
-class goto_boost():
+class goto_boost(Routine):
     # very similar to goto() but designed for grabbing boost
     # if a target is provided the bot will try to be facing the target as it passes over the boost
     def __init__(self, boost, target=None):
@@ -273,7 +278,7 @@ class goto_boost():
             agent.set_intent(flip(local_target))
 
 
-class jump_shot():
+class jump_shot(Routine):
     # Hits a target point at a target time towards a target direction
     # Target must be no higher than 300uu unless you're feeling lucky
     #TODO - speed
@@ -390,7 +395,7 @@ class jump_shot():
                 agent.controller.yaw = self.y if abs(self.y) > 0.3 else 0
 
 
-class kickoff():
+class kickoff(Routine):
     # A simple 1v1 kickoff that just drives up behind the ball and dodges
     # misses the boost on the slight-offcenter kickoffs haha
     def run(self, agent):
@@ -404,7 +409,7 @@ class kickoff():
                 flip(agent.me.local(agent.foe_goal.location - agent.me.location)))
 
 
-class recovery():
+class recovery(Routine):
     # Point towards our velocity vector and land upright, unless we aren't moving very fast
     # A vector can be provided to control where the car points when it lands
     def __init__(self, target=None):
@@ -423,7 +428,7 @@ class recovery():
             agent.clear_intent()
 
 
-class short_shot():
+class short_shot(Routine):
     # This routine drives towards the ball and attempts to hit it towards a given target
     # It does not require ball prediction and kinda guesses at where the ball will be on its own
     def __init__(self, target):
