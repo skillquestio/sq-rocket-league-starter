@@ -1,19 +1,13 @@
+# This file holds all of the mechanical tasks, called "routines", that the bot can do
 # --- WARNING --- #
 # DO NOT change these imports until you've read the note below.
 
 from util.common import *
-from util.objects import BotCommandAgent
+from util.objects import Routine
 
 # Note that the lines above (imports) have changed from the videos.
 # This is to provide a better coding experience for you. Don't change them!
 # Unless you know what you're doing :)
-
-# This file holds all of the mechanical tasks, called "routines", that the bot can do
-# Do not delete the class below - you won't see it in the videos because it has been added since.
-# It is  here to make your life easy, and tells the program what a Routine looks like :)
-class Routine():
-    def run(self, agent: BotCommandAgent) -> None:
-        pass
 
 # Similarly, in the videos drive does not have "(Routine)" behind it. That's  just telling the program
 # that the "drive" class should look like a "Routine" above. It helps with the code suggestions. 

@@ -6,6 +6,12 @@ from rlbot.agents.base_agent import BaseAgent, SimpleControllerState
 # This file holds all of the objects used in gosling utils
 # Includes custom vector and matrix objects
 
+# Do not delete the class below - you won't see it in the videos because it has been added since.
+# It is  here to make your life easy, and tells the program what a Routine looks like :)
+class Routine():
+    def run(self, agent: 'BotCommandAgent') -> None:
+        pass
+
 class BotCommandAgent(BaseAgent):
     # This is the main object of Gosling Utils. It holds/updates information about the game and runs routines
     # All utils rely on information being structured and accessed the same way as configured in this class
@@ -24,7 +30,7 @@ class BotCommandAgent(BaseAgent):
         self.friend_goal = goal_object(self.team)
         self.foe_goal = goal_object(not self.team)
         # Where we store the bot's current objective
-        self.intent = None
+        self.intent: None | Routine = None
         # Game time
         self.time = 0.0
         # Whether or not BotCommandAgent has run its get_ready() function
@@ -51,7 +57,7 @@ class BotCommandAgent(BaseAgent):
                         packet.game_cars[i].team == self.team and i != self.index]
         self.foes = [car_object(i, packet) for i in range(packet.num_cars) if packet.game_cars[i].team != self.team]
 
-    def set_intent(self, routine):
+    def set_intent(self, routine: Routine):
         self.intent = routine
 
     def get_intent(self):
@@ -60,7 +66,7 @@ class BotCommandAgent(BaseAgent):
     def clear_intent(self):
         self.intent = None
 
-    def push(self, routine):
+    def push(self, routine: Routine):
         # Shorthand for adding a routine to the stack
         self.set_intent(routine=routine)
 
@@ -120,7 +126,6 @@ class BotCommandAgent(BaseAgent):
     def run(self):
         # override this with your strategy code
         pass
-
 
 class car_object:
     # The carObject, and kin, convert the gametickpacket in something a little friendlier to use,
