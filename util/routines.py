@@ -9,11 +9,14 @@ from util.objects import BotCommandAgent
 # Unless you know what you're doing :)
 
 # This file holds all of the mechanical tasks, called "routines", that the bot can do
-
+# Do not delete the class below - you won't see it in the videos because it has been added since.
+# It is  here to make your life easy, and tells the program what a Routine looks like :)
 class Routine():
     def run(self, agent: BotCommandAgent) -> None:
         pass
 
+# Similarly, in the videos drive does not have "(Routine)" behind it. That's  just telling the program
+# that the "drive" class should look like a "Routine" above. It helps with the code suggestions. 
 class drive(Routine):
     def __init__(self, speed, target=None) -> None:
         self.speed = speed
