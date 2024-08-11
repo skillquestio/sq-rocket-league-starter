@@ -1,5 +1,12 @@
+# --- WARNING --- #
+# DO NOT change these imports until you've read the note below.
+
 from util.common import *
 from util.objects import BotCommandAgent
+
+# Note that the lines above (imports) have changed from the videos.
+# This is to provide a better coding experience for you. Don't change them!
+# Unless you know what you're doing :)
 
 # This file holds all of the mechanical tasks, called "routines", that the bot can do
 
