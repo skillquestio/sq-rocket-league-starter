@@ -150,7 +150,7 @@ class aerial_shot(Routine):
 class flip(Routine):
     # Flip takes a vector in local coordinates and flips/dodges in that direction
     # cancel causes the flip to cancel halfway through, which can be used to half-flip
-    def __init__(self, vector, cancel=False):
+    def __init__(self, vector: Vector3, cancel=False):
         self.vector = vector.normalize()
         self.pitch = abs(self.vector[0]) * -sign(self.vector[0])
         self.yaw = abs(self.vector[1]) * sign(self.vector[1])
@@ -183,7 +183,7 @@ class goto(Routine):
     # Drives towards a designated (stationary) target
     # Optional vector controls where the car should be pointing upon reaching the target
     # TODO - slow down if target is inside our turn radius
-    def __init__(self, target, vector=None, direction=1):
+    def __init__(self, target: Vector3, vector: Vector3 | None=None, direction=1):
         self.target = target
         self.vector = vector
         self.direction = direction
