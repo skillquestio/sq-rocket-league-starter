@@ -33,6 +33,8 @@ class BotCommandAgent(BaseAgent):
         self.foe_goal = goal_object(not self.team)
         # Where we store the bot's current objective
         self.intent: None | Routine = None
+        self.intent_run_ticks = 0
+        self.clear_intent_after_ticks = 480
         # Game time
         self.time = 0.0
         # Whether or not BotCommandAgent has run its get_ready() function
@@ -74,6 +76,7 @@ class BotCommandAgent(BaseAgent):
 
     def clear_intent(self):
         self.intent = None
+        self.intent_run_ticks = 0
 
     def push(self, routine: Routine):
         # Shorthand for adding a routine to the stack
@@ -140,6 +143,12 @@ class BotCommandAgent(BaseAgent):
         intent = self.get_intent()
         if intent is not None:
             intent.run(self)
+            self.intent_run_ticks += 1
+            if self.intent_run_ticks > self.clear_intent_after_ticks:
+                self.clear_intent()
+                print(
+                    f"Cleared routine {intent.__class__.__name__} after {self.clear_intent_after_ticks / 120} seconds"
+                )
         self.renderer.end_rendering()
         # send our updated controller back to rlbot
         return self.controller
