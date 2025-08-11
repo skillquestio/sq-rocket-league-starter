@@ -8,7 +8,7 @@ def backsolve(target, car, time, gravity=650):
     # Finds the acceleration required for a car to reach a target in a specific amount of time
     velocity_required = (target - car.location) / time
     acceleration_required = velocity_required - car.velocity
-    acceleration_required[2] += (gravity * time)
+    acceleration_required[2] += gravity * time
     return acceleration_required
 
 
@@ -31,15 +31,13 @@ def defaultPD(agent, local_target, direction=1.0):
         math.atan2(local_target[2], local_target[0]),
         # angle required to yaw towards target
         math.atan2(local_target[1], local_target[0]),
-        math.atan2(up[1], up[2])]  # angle required to roll upright
+        math.atan2(up[1], up[2]),
+    ]  # angle required to roll upright
     # Once we have the angles we need to rotate, we feed them into PD loops to determing the controller inputs
     agent.controller.steer = steerPD(target_angles[1], 0) * direction
-    agent.controller.pitch = steerPD(
-        target_angles[0], agent.me.angular_velocity[1]/4)
-    agent.controller.yaw = steerPD(
-        target_angles[1], -agent.me.angular_velocity[2]/4)
-    agent.controller.roll = steerPD(
-        target_angles[2], agent.me.angular_velocity[0]/2)
+    agent.controller.pitch = steerPD(target_angles[0], agent.me.angular_velocity[1] / 4)
+    agent.controller.yaw = steerPD(target_angles[1], -agent.me.angular_velocity[2] / 4)
+    agent.controller.roll = steerPD(target_angles[2], agent.me.angular_velocity[0] / 2)
     # Returns the angles, which can be useful for other purposes
     return target_angles
 
@@ -48,8 +46,12 @@ def defaultThrottle(agent, target_speed, direction=1.0):
     # accelerates the car to a desired speed using throttle and boost
     car_speed = agent.me.local(agent.me.velocity)[0]
     t = (target_speed * direction) - car_speed
-    agent.controller.throttle = cap((t**2) * sign(t)/1000, -1.0, 1.0)
-    agent.controller.boost = True if t > 150 and car_speed < 2275 and agent.controller.throttle == 1.0 else False
+    agent.controller.throttle = cap((t**2) * sign(t) / 1000, -1.0, 1.0)
+    agent.controller.boost = (
+        True
+        if t > 150 and car_speed < 2275 and agent.controller.throttle == 1.0
+        else False
+    )
     return car_speed
 
 
@@ -74,7 +76,7 @@ def find_slope(shot_vector, car_to_target):
     # 1.0 = you're about 45 degrees offcenter
     d = shot_vector.dot(car_to_target)
     e = abs(shot_vector.cross((0, 0, 1)).dot(car_to_target))
-    return cap(d / e if e != 0 else 10*sign(d), -3.0, 3.0)
+    return cap(d / e if e != 0 else 10 * sign(d), -3.0, 3.0)
 
 
 def post_correction(ball_location, left_target: Vector3, right_target: Vector3):
@@ -83,32 +85,39 @@ def post_correction(ball_location, left_target: Vector3, right_target: Vector3):
     # We purposely make this a bit larger so that our shots have a higher chance of success
     ball_radius = 110
     goal_line_perp = (right_target - left_target).cross((0, 0, 1))
-    left_adjusted = left_target + \
-        ((left_target - ball_location).normalize().cross((0, 0, -1))*ball_radius)
-    right_adjusted = right_target + \
-        ((right_target - ball_location).normalize().cross((0, 0, 1))*ball_radius)
-    left_corrected = left_target if (
-        left_adjusted-left_target).dot(goal_line_perp) > 0.0 else left_adjusted
-    right_corrected = right_target if (
-        right_adjusted-right_target).dot(goal_line_perp) > 0.0 else right_adjusted
+    left_adjusted = left_target + (
+        (left_target - ball_location).normalize().cross((0, 0, -1)) * ball_radius
+    )
+    right_adjusted = right_target + (
+        (right_target - ball_location).normalize().cross((0, 0, 1)) * ball_radius
+    )
+    left_corrected = (
+        left_target
+        if (left_adjusted - left_target).dot(goal_line_perp) > 0.0
+        else left_adjusted
+    )
+    right_corrected = (
+        right_target
+        if (right_adjusted - right_target).dot(goal_line_perp) > 0.0
+        else right_adjusted
+    )
 
-    difference = (right_corrected - left_corrected)
+    difference = right_corrected - left_corrected
     new_goal_line = difference.normalize()
     new_goal_width = difference.magnitude()
-    new_goal_perp = (new_goal_line.cross((0, 0, 1)))
+    new_goal_perp = new_goal_line.cross((0, 0, 1))
     goal_center = left_corrected + (new_goal_line * new_goal_width * 0.5)
     ball_to_goal = (goal_center - ball_location).normalize()
 
-    ball_fits = new_goal_width * \
-        abs(new_goal_perp.dot(ball_to_goal)) > ball_radius * 2
+    ball_fits = new_goal_width * abs(new_goal_perp.dot(ball_to_goal)) > ball_radius * 2
     return left_corrected, right_corrected, ball_fits
 
 
 def quadratic(a, b, c):
     # Returns the two roots of a quadratic
-    inside = math.sqrt((b*b) - (4*a*c))
+    inside = math.sqrt((b * b) - (4 * a * c))
     if a != 0:
-        return (-b + inside)/(2*a), (-b - inside)/(2*a)
+        return (-b + inside) / (2 * a), (-b - inside) / (2 * a)
     else:
         return -1, -1
 
@@ -119,9 +128,9 @@ def shot_valid(agent, shot, threshold=45):
     # threshold controls the tolerance we allow the ball to be off by
     slices = agent.get_ball_prediction_struct().slices
     soonest = 0
-    latest = len(slices)-1
-    while len(slices[soonest:latest+1]) > 2:
-        midpoint = (soonest+latest) // 2
+    latest = len(slices) - 1
+    while len(slices[soonest : latest + 1]) > 2:
+        midpoint = (soonest + latest) // 2
         if slices[midpoint].game_seconds > shot.intercept_time:
             latest = midpoint
         else:
@@ -129,11 +138,14 @@ def shot_valid(agent, shot, threshold=45):
     # preparing to interpolate between the selected slices
     dt = slices[latest].game_seconds - slices[soonest].game_seconds
     time_from_soonest = shot.intercept_time - slices[soonest].game_seconds
-    slopes = (Vector3(slices[latest].physics.location) -
-              Vector3(slices[soonest].physics.location)) * (1/dt)
+    slopes = (
+        Vector3(slices[latest].physics.location)
+        - Vector3(slices[soonest].physics.location)
+    ) * (1 / dt)
     # Determining exactly where the ball will be at the given shot's intercept_time
-    predicted_ball_location = Vector3(
-        slices[soonest].physics.location) + (slopes * time_from_soonest)
+    predicted_ball_location = Vector3(slices[soonest].physics.location) + (
+        slopes * time_from_soonest
+    )
     # Comparing predicted location with where the shot expects the ball to be
     return (shot.ball_location - predicted_ball_location).magnitude() < threshold
 
@@ -157,7 +169,7 @@ def sign(x):
 
 def steerPD(angle, rate):
     # A Proportional-Derivative control loop used for defaultPD
-    return cap(((35*(angle+rate))**3)/10, -1.0, 1.0)
+    return cap(((35 * (angle + rate)) ** 3) / 10, -1.0, 1.0)
 
 
 def lerp(a, b, t):
@@ -171,4 +183,4 @@ def invlerp(a, b, v):
     # Inverse linear interpolation from a to b with value v
     # For instance, it returns 0 if v == a, and returns 1 if v == b, and returns 0.5 if v is exactly between a and b
     # Works for both numbers and Vector3s
-    return (v - a)/(b - a)
+    return (v - a) / (b - a)

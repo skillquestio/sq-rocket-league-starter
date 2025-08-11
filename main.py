@@ -3,6 +3,7 @@
 from util.objects import *
 from util.routines import *
 
+
 class Bot(BotCommandAgent):
     # This function runs every in-game tick (every time the game updates anything)
     def run(self):
