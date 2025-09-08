@@ -3,19 +3,15 @@ from rlbot.utils.structures import game_data_struct
 from rlbot.agents.base_agent import BaseAgent, SimpleControllerState
 
 
-# This file holds all of the objects used in gosling utils
-# Includes custom vector and matrix objects
-
-
-# Do not delete the class below - you won't see it in the videos because it has been added since.
-# It is  here to make your life easy, and tells the program what a Routine looks like :)
+# The class below is here to make your life easy, and tells the program what a Routine looks like :)
+# We don't talk about this type of typing in the videos
 class Routine:
     def run(self, agent: "BotCommandAgent") -> None:
         pass
 
 
 class BotCommandAgent(BaseAgent):
-    # This is the main object of Gosling Utils. It holds/updates information about the game and runs routines
+    # This is the main object for your bot. It holds/updates information about the game and runs routines
     # All utils rely on information being structured and accessed the same way as configured in this class
     def initialize_agent(self):
         # A list of cars for both teammates and opponents
@@ -325,7 +321,6 @@ class Matrix3:
 
 
 class Vector3:
-    # This is the backbone of Gosling Utils.
     # The Vector3 makes it easy to store positions, velocities, etc and perform vector math
     # A Vector3 can be created with:
     # - Anything that has a __getitem__ (lists, tuples, Vector3's, etc)

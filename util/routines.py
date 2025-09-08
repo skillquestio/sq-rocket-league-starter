@@ -1,17 +1,11 @@
 # This file holds all of the mechanical tasks, called "routines", that the bot can do
 # --- WARNING --- #
-# DO NOT change these imports until you've read the note below.
+# DO NOT change these imports (lines directly below) until you know what you're doing :)
 
 from util.common import *
 from util.objects import Routine
 
-# Note that the lines above (imports) have changed from the videos.
-# This is to provide a better coding experience for you. Don't change them!
-# Unless you know what you're doing :)
 
-
-# Similarly, in the videos drive does not have "(Routine)" behind it. That's  just telling the program
-# that the "drive" class should look like a "Routine" above. It helps with the code suggestions.
 class drive(Routine):
     def __init__(self, speed, target=None) -> None:
         self.speed = speed

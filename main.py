@@ -1,9 +1,8 @@
-# This is the main file where you control your bot's strategy
-
-from util.objects import *
-from util.routines import *
+from util.objects import BotCommandAgent
+from bot import run
 
 
-def run(bot: BotCommandAgent):
-    # set_intent tells the bot what it's trying to do
-    bot.set_intent(drive(500))
+# Hello! Do not make any changes to this file :)
+class Bot(BotCommandAgent):
+    def run(self):
+        run(self)
