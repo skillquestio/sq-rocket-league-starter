@@ -7,4 +7,4 @@ from util.routines import *
 # this function runs once per in-game frame
 def run(bot: BotCommandAgent):
     # set_intent tells the bot what it's trying to do
-    bot.set_intent(Drive(500))
+    bot.set_intent(Drive(0))
