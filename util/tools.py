@@ -90,7 +90,7 @@ def find_hits(agent, targets):
                                     )
                                 ) and slope > 0.0:
                                     hits[pair].append(
-                                        jump_shot(
+                                        JumpShot(
                                             ball_location,
                                             intercept_time,
                                             best_shot_vector,
@@ -112,7 +112,7 @@ def find_hits(agent, targets):
                                         < 400 * forward_time
                                     ):
                                         hits[pair].append(
-                                            aerial_shot(
+                                            AerialShot(
                                                 ball_location,
                                                 intercept_time,
                                                 best_shot_vector,
@@ -125,7 +125,7 @@ def find_hits(agent, targets):
                                 and slope > 0.25
                             ):
                                 hits[pair].append(
-                                    jump_shot(
+                                    JumpShot(
                                         ball_location,
                                         intercept_time,
                                         best_shot_vector,

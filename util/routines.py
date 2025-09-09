@@ -6,7 +6,7 @@ from util.common import *
 from util.objects import Routine
 
 
-class drive(Routine):
+class Drive(Routine):
     def __init__(self, speed, target=None) -> None:
         self.speed = speed
         self.target = target
@@ -18,7 +18,7 @@ class drive(Routine):
             defaultPD(agent, agent.me.local(relative_target))
 
 
-class atba(Routine):
+class AttackBall(Routine):
     # An example routine that just drives towards the ball at max speed
     def run(self, agent):
         relative_target = agent.ball.location - agent.me.location
@@ -27,7 +27,7 @@ class atba(Routine):
         defaultThrottle(agent, 2300)
 
 
-class aerial_shot(Routine):
+class AerialShot(Routine):
     # Very similar to jump_shot(), but instead designed to hit targets above 300uu
     # ***This routine is a WIP*** It does not currently hit the ball very hard, nor does it like to be accurate above 600uu or so
     def __init__(self, ball_location, intercept_time, shot_vector, ratio):
@@ -170,12 +170,12 @@ class aerial_shot(Routine):
                 self.counter += 1
 
         if raw_time_remaining < -0.25:
-            agent.set_intent(recovery())
+            agent.set_intent(Recovery())
         if not shot_valid(agent, self, 90):
             agent.clear_intent()
 
 
-class flip(Routine):
+class Flip(Routine):
     # Flip takes a vector in local coordinates and flips/dodges in that direction
     # cancel causes the flip to cancel halfway through, which can be used to half-flip
     def __init__(self, vector: Vector3, cancel=False):
@@ -204,10 +204,10 @@ class flip(Routine):
             agent.controller.pitch = self.pitch
             agent.controller.yaw = self.yaw
         else:
-            agent.set_intent(recovery())
+            agent.set_intent(Recovery())
 
 
-class goto(Routine):
+class Goto(Routine):
     # Drives towards a designated (stationary) target
     # Optional vector controls where the car should be pointing upon reaching the target
     # TODO - slow down if target is inside our turn radius
@@ -258,14 +258,14 @@ class goto(Routine):
             and velocity < 2150
             and distance_remaining / velocity > 2.0
         ):
-            agent.set_intent(flip(local_target))
+            agent.set_intent(Flip(local_target))
         elif abs(angles[1]) > 2.8 and velocity < 200:
-            agent.set_intent(flip(local_target, True))
+            agent.set_intent(Flip(local_target, True))
         elif agent.me.airborne:
-            agent.set_intent(recovery(self.target))
+            agent.set_intent(Recovery(self.target))
 
 
-class goto_boost(Routine):
+class GotoBoost(Routine):
     # very similar to goto() but designed for grabbing boost
     # if a target is provided the bot will try to be facing the target as it passes over the boost
     def __init__(self, boost, target=None):
@@ -316,7 +316,7 @@ class goto_boost(Routine):
         ):
             agent.clear_intent()
         elif agent.me.airborne:
-            agent.set_intent(recovery(self.target))
+            agent.set_intent(Recovery(self.target))
         elif (
             abs(angles[1]) < 0.05
             and velocity > 600
@@ -326,10 +326,10 @@ class goto_boost(Routine):
                 or (adjustment < 90 and car_to_target / velocity > 2.0)
             )
         ):
-            agent.set_intent(flip(local_target))
+            agent.set_intent(Flip(local_target))
 
 
-class jump_shot(Routine):
+class JumpShot(Routine):
     # Hits a target point at a target time towards a target direction
     # Target must be no higher than 300uu unless you're feeling lucky
     # TODO - speed
@@ -450,7 +450,7 @@ class jump_shot(Routine):
                 # If we're out of time or not fast enough to be within 45 units of target at the intercept time, we reset
                 agent.clear_intent()
                 if agent.me.airborne:
-                    agent.set_intent(recovery())
+                    agent.set_intent(Recovery())
             elif (
                 local_acceleration_required[2] > self.jump_threshold
                 and local_acceleration_required[2]
@@ -464,7 +464,7 @@ class jump_shot(Routine):
                 or raw_time_remaining <= -0.9
                 or (not agent.me.airborne and self.counter > 0)
             ):
-                agent.set_intent(recovery())
+                agent.set_intent(Recovery())
             elif (
                 self.counter == 0
                 and local_acceleration_required[2] > 0.0
@@ -489,7 +489,7 @@ class jump_shot(Routine):
                 agent.controller.yaw = self.y if abs(self.y) > 0.3 else 0
 
 
-class kickoff(Routine):
+class Kickoff(Routine):
     # A simple 1v1 kickoff that just drives up behind the ball and dodges
     # misses the boost on the slight-offcenter kickoffs haha
     def run(self, agent):
@@ -500,11 +500,11 @@ class kickoff(Routine):
         if local_target.magnitude() < 650:
             # flip towards opponent goal
             agent.set_intent(
-                flip(agent.me.local(agent.foe_goal.location - agent.me.location))
+                Flip(agent.me.local(agent.foe_goal.location - agent.me.location))
             )
 
 
-class recovery(Routine):
+class Recovery(Routine):
     # Point towards our velocity vector and land upright, unless we aren't moving very fast
     # A vector can be provided to control where the car points when it lands
     def __init__(self, target=None):
@@ -522,7 +522,7 @@ class recovery(Routine):
             agent.clear_intent()
 
 
-class short_shot(Routine):
+class ShortShot(Routine):
     # This routine drives towards the ball and attempts to hit it towards a given target
     # It does not require ball prediction and kinda guesses at where the ball will be on its own
     def __init__(self, target):
@@ -570,4 +570,4 @@ class short_shot(Routine):
         )
 
         if abs(angles[1]) < 0.05 and (eta < 0.45 or distance < 150):
-            agent.set_intent(flip(agent.me.local(car_to_ball)))
+            agent.set_intent(Flip(agent.me.local(car_to_ball)))
