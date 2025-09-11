@@ -1,5 +1,5 @@
 from util.objects import BotCommandAgent
-from bot import run
+from main import run
 
 
 # Hello! Do not make any changes to this file :)
