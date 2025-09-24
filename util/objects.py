@@ -201,7 +201,8 @@ class Car:
             ]
         ).data
         self.demolished = car.is_demolished
-        self.airborne = not car.has_wheel_contact
+        # self.airborne = not car.has_wheel_contact # this is reliable in Rocket League, but not in RLSim
+        self.airborne = self.location.z > 19 or self.orientation.up.z < 0.9
         self.supersonic = car.is_super_sonic
         self.jumped = car.jumped
         self.doublejumped = car.double_jumped
