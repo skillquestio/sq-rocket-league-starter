@@ -70,9 +70,11 @@ class BotCommandAgent(BaseAgent):
     def get_intent(self):
         return self.intent
 
-    def clear_intent(self):
+    def clear_intent(self, reason: str = ""):
         self.intent = None
         self.intent_run_ticks = 0
+        if reason:
+            print(f"Cleared intent: {reason}")
 
     def push(self, routine: Routine):
         # Shorthand for adding a routine to the stack
@@ -141,9 +143,8 @@ class BotCommandAgent(BaseAgent):
             intent.run(self)
             self.intent_run_ticks += 1
             if self.intent_run_ticks > self.clear_intent_after_ticks:
-                self.clear_intent()
-                print(
-                    f"Cleared routine {intent.__class__.__name__} after {self.clear_intent_after_ticks / 120} seconds"
+                self.clear_intent(
+                    f"Cleared {intent.__class__.__name__} after {self.clear_intent_after_ticks / 120} seconds"
                 )
         self.renderer.end_rendering()
         # send our updated controller back to rlbot
