@@ -49,9 +49,12 @@ class BotCommandAgent(BaseAgent):
     def get_ready(self, packet: game_data_struct.GameTickPacket):
         # Preps all of the objects that will be updated during play
         field_info = self.get_field_info()
+        max_boost_z = max(boost.location.z for boost in field_info.boost_pads)
+        # the height above which all boosts are considered large (standard maps only) - set in get_ready()
+        large_boost_height = max_boost_z - 0.5
         for i in range(field_info.num_boosts):
             boost = field_info.boost_pads[i]
-            self.boosts.append(Boost(i, boost.location))
+            self.boosts.append(Boost(i, boost.location, large_boost_height))
         self.refresh_player_lists(packet)
         self.ball.update(packet)
         self.ready = True
@@ -255,12 +258,12 @@ class Ball:
 
 
 class Boost:
-    def __init__(self, index, location):
+    def __init__(self, index, location, large_boost_height):
         self.index = index
         self.location = Vector3(location.x, location.y, location.z)
         self.active = True
         # determine boost size by height (only works for standard maps)
-        self.large = self.location.z > 7
+        self.large = self.location.z > large_boost_height
         print("location", self.location.z, "large", self.large)
 
     def update(self, packet):
