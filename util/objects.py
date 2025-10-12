@@ -11,34 +11,40 @@ class Routine:
 
 
 class BotCommandAgent(BaseAgent):
+    # A list of cars for both teammates and opponents
+    friends: list["Car"] = []
+    foes: list["Car"] = []
+    me: "Car"
+    ball: "Ball"
+    game: "Game"
+    boosts: list["Boost"] = []
+    friend_goal: "Goal"
+    foe_goal: "Goal"
+    # Where we store the bot's current objective
+    intent: None | Routine
+    intent_run_ticks: int = 0
+    clear_intent_after_ticks: int = 480
+    # time in game, seconds
+    time: float = 0.0
+    # Whether or not BotCommandAgent has run its get_ready() function
+    ready: bool = False
+    # The controller-mimicking object that will be sent to rlbot every tick
+    controller: SimpleControllerState
+    # a flag that tells us when kickoff is happening
+    kickoff_flag: bool = False
+
     # This is the main object for your bot. It holds/updates information about the game and runs routines
     # All utils rely on information being structured and accessed the same way as configured in this class
     def initialize_agent(self):
-        # A list of cars for both teammates and opponents
-        self.friends = []
-        self.foes = []
-        # This holds the carobject for our agent
         self.me = Car(self.index)
-
         self.ball = Ball()
         self.game = Game()
-        # A list of boosts
-        self.boosts: list[Boost] = []
         # goals
         self.friend_goal = Goal(self.team)
         self.foe_goal = Goal(not self.team)
-        # Where we store the bot's current objective
-        self.intent: None | Routine = None
-        self.intent_run_ticks = 0
-        self.clear_intent_after_ticks = 480
-        # Game time
-        self.time = 0.0
-        # Whether or not BotCommandAgent has run its get_ready() function
-        self.ready = False
+
         # the controller that is returned to the framework after every tick
         self.controller = SimpleControllerState()
-        # a flag that tells us when kickoff is happening
-        self.kickoff_flag = False
 
     def get_ready(self, packet: game_data_struct.GameTickPacket):
         # Preps all of the objects that will be updated during play
@@ -255,6 +261,7 @@ class Boost:
         self.active = True
         # determine boost size by height (only works for standard maps)
         self.large = self.location.z > 7
+        print("location", self.location.z, "large", self.large)
 
     def update(self, packet):
         self.active = packet.game_boosts[self.index].is_active
