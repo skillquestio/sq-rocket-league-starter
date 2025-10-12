@@ -23,7 +23,7 @@ class BotCommandAgent(BaseAgent):
         self.ball = Ball()
         self.game = Game()
         # A list of boosts
-        self.boosts = []
+        self.boosts: list[Boost] = []
         # goals
         self.friend_goal = Goal(self.team)
         self.foe_goal = Goal(not self.team)
