@@ -264,7 +264,6 @@ class Boost:
         self.active = True
         # determine boost size by height (only works for standard maps)
         self.large = self.location.z > large_boost_height
-        print("location", self.location.z, "large", self.large)
 
     def update(self, packet):
         self.active = packet.game_boosts[self.index].is_active
